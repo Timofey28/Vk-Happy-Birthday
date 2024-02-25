@@ -1,0 +1,12 @@
+# Sensitive files
+data.py
+
+# Testing files
+*test*
+
+# PyCharm files
+.idea/*
+__pycache__/*
+
+# Log files
+*.log
