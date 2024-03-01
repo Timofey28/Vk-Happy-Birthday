@@ -1,6 +1,7 @@
 import vk_api
 from data import USER_TOKEN, GROUP_ID
 # from data import MY_USER_TOKEN as USER_TOKEN, MY_GROUP_ID as GROUP_ID
+from data import MY_ID
 import schedule
 from time import sleep
 import logging
@@ -20,8 +21,17 @@ def post_congratulation():
         logging.info("Люди, рожденные в этот день, не найдены")
         return
 
-    logging.info('\n'.join([f'{x["first_name"]} {x["last_name"]} id{x["id"]}' for x in newborns]))
-    congratulation_text, attachment = get_text_and_attachment()
+    logging.info(''.join([f'\n{x["first_name"]} {x["last_name"]} id{x["id"]}' for x in newborns]))
+    congratulation_text, attachment = '', ''
+    for _ in range(10):
+        try:
+            congratulation_text, attachment = get_text_and_attachment()
+        except:
+            if _ == 9:
+                vk.messages.send(user_id=MY_ID, message='Опять не получилось выгрузить фотку на сервер, программу завершаю ((', random_id=0)
+                exit(0)
+            logging.info('Не получилось выгрузить фотку на сервер вк, ждем 5 секунд и пробуем еще...')
+            sleep(5)
     newborn_links = ', '.join([f'[id{x["id"]}|{x["first_name"]} {x["last_name"]}]' for x in newborns])
     message = f'🎉🎉🎉 Поздравляем с Днём рождения наших сегодняшних именинников:\n\n{newborn_links}\n\n{congratulation_text}'
     message += f'\nВаш ГАЛОМЕД 💎\n\n{get_static_text()}'
@@ -102,6 +112,7 @@ if __name__ == '__main__':
     logging.basicConfig(
         format="%(asctime)s - %(message)s",
         filename='info.log',
+        filemode='w',
         level=logging.INFO
     )
     start_schedule()
