@@ -32,12 +32,12 @@ def post_congratulation():
                 exit(0)
             logging.info('Не получилось выгрузить фотку на сервер вк, ждем 5 секунд и пробуем еще...')
             sleep(5)
-    newborn_links = ', '.join([f'[id{x["id"]}|{x["first_name"]} {x["last_name"]}]' for x in newborns])
+    newborn_links = ', '.join([f'[id{x["id"]}|{x["first_name"]} {x["last_name"]}]' for x in newborns if x['first_name'] != 'DELETED'])
     message = f'🎉🎉🎉 Поздравляем с Днём рождения наших сегодняшних именинников:\n\n{newborn_links}\n\n{congratulation_text}'
     message += f'\nВаш ГАЛОМЕД 💎\n\n{get_static_text()}'
 
     result = vk.wall.post(owner_id=-GROUP_ID, message=message, attachments=attachment, from_group=1)
-    logging.info(f'Пост успешно опубликован! - https://vk.com/club{GROUP_ID}?w=wall-{GROUP_ID}_{result["post_id"]}')
+    logging.info(f'Пост успешно опубликован! - https://vk.com/wall-{GROUP_ID}_{result["post_id"]}\n')
 
 
 def get_newborns():
