@@ -1,6 +1,5 @@
 import vk_api
 from data import USER_TOKEN, GROUP_ID
-# from data import MY_USER_TOKEN as USER_TOKEN, MY_GROUP_ID as GROUP_ID
 from data import MY_ID
 import schedule
 from time import sleep
@@ -9,7 +8,7 @@ from datetime import date
 import requests
 
 CONGRATULATIONS_AMOUNT = 32
-PHOTOS_AMOUNT = 43
+PHOTOS_AMOUNT = 41
 
 session = vk_api.VkApi(token=USER_TOKEN)
 vk = session.get_api()
