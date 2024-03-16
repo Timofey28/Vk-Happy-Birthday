@@ -21,10 +21,12 @@ def post_congratulation():
         return
 
     logging.info(''.join([f'\n{x["first_name"]} {x["last_name"]} id{x["id"]}' for x in newborns]))
-    congratulation_text, attachment = '', ''
+    congratulation_path, photo_path, congrat_no, photo_no = get_congratulation_and_photo_paths()
+    logging.info(f'(congrat, photo) - ({congrat_no}, {photo_no})')
+    congratulation, attachment = None, None
     for _ in range(10):
         try:
-            congratulation_text, attachment = get_text_and_attachment()
+            congratulation, attachment = get_text_and_attachment(congratulation_path, photo_path)
         except:
             if _ == 9:
                 vk.messages.send(user_id=MY_ID, message='Опять не получилось выгрузить фотку на сервер, программу завершаю ((', random_id=0)
@@ -32,7 +34,7 @@ def post_congratulation():
             logging.info('Не получилось выгрузить фотку на сервер вк, ждем 5 секунд и пробуем еще...')
             sleep(5)
     newborn_links = ', '.join([f'[id{x["id"]}|{x["first_name"]} {x["last_name"]}]' for x in newborns if x['first_name'] != 'DELETED'])
-    message = f'🎉🎉🎉 Поздравляем с Днём рождения наших сегодняшних именинников:\n\n{newborn_links}\n\n{congratulation_text}'
+    message = f'🎉🎉🎉 Поздравляем с Днём рождения наших сегодняшних именинников:\n\n{newborn_links}\n\n{congratulation}'
     message += f'\nВаш ГАЛОМЕД 💎\n\n{get_static_text()}'
 
     result = vk.wall.post(owner_id=-GROUP_ID, message=message, attachments=attachment, from_group=1)
@@ -52,8 +54,7 @@ def get_newborns():
     return group_members
 
 
-def get_text_and_attachment():
-    message_path, photo_path = get_congratulation_and_photo_paths()
+def get_text_and_attachment(message_path: str, photo_path: str):
     with open(message_path, encoding="utf-8") as file:
         message = file.read()
     upload_url = vk.photos.getWallUploadServer(peer_id=GROUP_ID)['upload_url']
@@ -64,22 +65,22 @@ def get_text_and_attachment():
 
 def get_congratulation_and_photo_paths():
     with open(f'congratulations/no.txt') as file:
-        congratulation_no = int(file.read())
+        prev_congratulation_no = int(file.read())
     with open(f'photos/no.txt') as file:
-        photo_no = int(file.read())
-    congratulation_path = f'congratulations/congratulation{congratulation_no}.txt'
-    photo_path = f'photos/ДР{photo_no}.jpg'
-    congratulation_no += 1
+        prev_photo_no = int(file.read())
+    congratulation_path = f'congratulations/congratulation{prev_congratulation_no}.txt'
+    photo_path = f'photos/ДР{prev_photo_no}.jpg'
+    congratulation_no = prev_congratulation_no + 1
     if congratulation_no > CONGRATULATIONS_AMOUNT:
         congratulation_no = 1
-    photo_no += 1
+    photo_no = prev_photo_no + 1
     if photo_no > PHOTOS_AMOUNT:
         photo_no = 1
     with open(f'congratulations/no.txt', 'w') as file:
         file.write(str(congratulation_no))
     with open(f'photos/no.txt', 'w') as file:
         file.write(str(photo_no))
-    return congratulation_path, photo_path
+    return congratulation_path, photo_path, prev_congratulation_no, prev_photo_no
 
 
 def get_static_text():
