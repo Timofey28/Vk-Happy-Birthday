@@ -1,6 +1,6 @@
 import vk_api
 from data import USER_TOKEN, GROUP_ID
-from data import MY_ID
+from data import MY_USER_TOKEN, MY_ID
 import schedule
 from time import sleep
 import logging
@@ -27,17 +27,28 @@ def post_congratulation():
     for _ in range(10):
         try:
             congratulation, attachment = get_text_and_attachment(congratulation_path, photo_path)
+            break
         except:
             if _ == 9:
-                vk.messages.send(user_id=MY_ID, message='Опять не получилось выгрузить фотку на сервер, программу завершаю ((', random_id=0)
+                requests.get(f'https://api.vk.com/method/messages.send?user_id={MY_ID}&message=Не получилось выгрузить фотку на сервер, программу завершаю ((&random_id=0&access_token={MY_USER_TOKEN}&v=5.131')
                 exit(0)
-            logging.info('Не получилось выгрузить фотку на сервер вк, ждем 5 секунд и пробуем еще...')
-            sleep(5)
+            logging.info('Не получилось выгрузить фотку на сервер вк, ждем 30 секунд и пробуем еще...')
+            sleep(30)
     newborn_links = ', '.join([f'[id{x["id"]}|{x["first_name"]} {x["last_name"]}]' for x in newborns if x['first_name'] != 'DELETED'])
     message = f'🎉🎉🎉 Поздравляем с Днём рождения наших сегодняшних именинников:\n\n{newborn_links}\n\n{congratulation}'
     message += f'\nВаш ГАЛОМЕД 💎\n\n{get_static_text()}'
 
-    result = vk.wall.post(owner_id=-GROUP_ID, message=message, attachments=attachment, from_group=1)
+    result = None
+    for _ in range(10):
+        try:
+            result = vk.wall.post(owner_id=-GROUP_ID, message=message, attachments=attachment, from_group=1)
+            break
+        except:
+            if _ == 9:
+                requests.get(f'https://api.vk.com/method/messages.send?user_id={MY_ID}&message=Не получилось опубликовать пост, программу завершаю ((&random_id=0&access_token={MY_USER_TOKEN}&v=5.131')
+                exit(0)
+            logging.info('Не получилось опубликовать пост, ждем 30 секунд и пробуем еще...')
+            sleep(30)
     logging.info(f'Пост успешно опубликован! - https://vk.com/wall-{GROUP_ID}_{result["post_id"]}\n')
 
 
