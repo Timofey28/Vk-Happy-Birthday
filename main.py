@@ -1,3 +1,5 @@
+import os.path
+
 import vk_api
 from data import USER_TOKEN, GROUP_ID
 from data import MY_USER_TOKEN, MY_ID
@@ -75,9 +77,17 @@ def get_text_and_attachment(message_path: str, photo_path: str):
 
 
 def get_congratulation_and_photo_paths():
-    with open(f'congratulations/no.txt') as file:
+    congratulations_no_path = 'congratulations/no.txt'
+    photos_no_path = 'photos/no.txt'
+    if not os.path.exists(congratulations_no_path):
+        with open(congratulations_no_path, 'w') as file:
+            file.write('1')
+    if not os.path.exists(photos_no_path):
+        with open(photos_no_path, 'w') as file:
+            file.write('1')
+    with open(congratulations_no_path) as file:
         prev_congratulation_no = int(file.read())
-    with open(f'photos/no.txt') as file:
+    with open(photos_no_path) as file:
         prev_photo_no = int(file.read())
     congratulation_path = f'congratulations/congratulation{prev_congratulation_no}.txt'
     photo_path = f'photos/ДР{prev_photo_no}.jpg'
@@ -87,9 +97,9 @@ def get_congratulation_and_photo_paths():
     photo_no = prev_photo_no + 1
     if photo_no > PHOTOS_AMOUNT:
         photo_no = 1
-    with open(f'congratulations/no.txt', 'w') as file:
+    with open(congratulations_no_path, 'w') as file:
         file.write(str(congratulation_no))
-    with open(f'photos/no.txt', 'w') as file:
+    with open(photos_no_path, 'w') as file:
         file.write(str(photo_no))
     return congratulation_path, photo_path, prev_congratulation_no, prev_photo_no
 

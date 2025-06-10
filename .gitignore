@@ -1,13 +1,18 @@
-# Sensitive files
+# Sensitive
 data.py
 
-# Testing files
+# Testing
 *test*
 
-# PyCharm files
-.idea/*
-__pycache__/*
+# IDE & cache
+.idea/
+__pycache__/
 
-# Log files
+# Logs
 *.log
 *.txt
+congratulations/no.txt
+photos/no.txt
+
+# Do not ignore!
+!requirements.txt
